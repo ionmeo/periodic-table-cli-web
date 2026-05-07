@@ -75,7 +75,7 @@ class Renderer {
                 currentFGColor = undefined;
                 currentBGColor = undefined;
                 currentBold = false;
-                block += '\u001b[0m';  // End format
+                response += '\u001b[0m';  // End format
                 response += '\n';
             }
         }
