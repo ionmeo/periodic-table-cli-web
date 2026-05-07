@@ -345,10 +345,6 @@ class Dashboard {
             this.board[y + 1][x + 3].config.foregroundColor = color.FG;
             this.board[y + 1][x + 4].config.foregroundColor = color.FG;
 
-            this.board[y + 1][x + 2].config.bold = true;
-            this.board[y + 1][x + 3].config.bold = true;
-            this.board[y + 1][x + 4].config.bold = true;
-
             // Element
             var elementColor = Colors.WHITE;
             if (displayMode !== DisplayModes.STANDARD && fillColor !== undefined) {
@@ -357,10 +353,6 @@ class Dashboard {
             this.board[y + 2][x + 2].config.foregroundColor = elementColor.FG;
             this.board[y + 2][x + 3].config.foregroundColor = elementColor.FG;
             this.board[y + 2][x + 4].config.foregroundColor = elementColor.FG;
-
-            this.board[y + 2][x + 2].config.bold = true;
-            this.board[y + 2][x + 3].config.bold = true;
-            this.board[y + 2][x + 4].config.bold = true;
         } else {
             if (displayMode !== DisplayModes.STANDARD && fillColor !== undefined) {
                 // Atomic number
