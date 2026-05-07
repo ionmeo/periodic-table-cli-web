@@ -32,15 +32,13 @@ const DEGUG_MODE = false;
 
 class App {
 
-    start(config) {
+    start(config, host) {
+        this.host = host;
         this.stateController = new StateController(config);
-        this.dashboard = new Dashboard();
+        this.dashboard = new Dashboard(host);
 
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        process.stdin.setEncoding('utf8');
-        process.stdout.write('\u001b[?1049h');  // Enter alternate screen mode
-        process.stdout.write('\u001B[?25l');    // Hise cursor
+        this.host.stdout.write('\u001b[?1049h');  // Enter alternate screen mode
+        this.host.stdout.write('\u001B[?25l');    // Hise cursor
         this._initHandlers();
         this._draw(true);
     }
@@ -48,18 +46,18 @@ class App {
     _draw(full) {
         const renderConfig = this.stateController.getRenderConfig();
         this._clearScreen(full);
-        process.stdout.write(this.dashboard.render(renderConfig));
+        this.host.stdout.write(this.dashboard.render(renderConfig));
     }
 
     _clearScreen(full) {
         if (full) {
-            process.stdout.write('\u001b[2J');  // Clear screen
+            this.host.stdout.write('\u001b[2J');  // Clear screen
         }
-        process.stdout.write('\u001b[H');   // Move cursor to home position
+        this.host.stdout.write('\u001b[H');   // Move cursor to home position
     }
 
     _initHandlers() {
-        process.stdin.on('data', key => {
+        this.host.stdin.on('data', key => {
             try {
                 var handled = false;
                 if (key === KeyMap.CTRL_C || key === KeyMap.ESC) {
@@ -105,11 +103,11 @@ class App {
         });
 
         // On terminal resize
-        process.on("SIGWINCH", () => {
+        this.host.on("SIGWINCH", () => {
             try {
                 this.dashboard.updateScrollingOnResize()
                 this._draw(true);
-                process.stdout.write('\u001B[?25l');  // Hise cursor
+                this.host.stdout.write('\u001B[?25l');  // Hise cursor
             } catch(e) {
                 if (DEGUG_MODE) {
                     this.exit(e.stack);
@@ -121,11 +119,11 @@ class App {
     }
 
     exit(message) {
-        process.stdout.write('\u001b[?1049l');  // Exit altername screen mode
-        process.stdout.write('\u001B[?25h');    // Show cursor
+        this.host.stdout.write('\u001b[?1049l');  // Exit altername screen mode
+        this.host.stdout.write('\u001B[?25h');    // Show cursor
         if (message) {
             console.log(message);
-        } else if (process.stdout.rows < MINIMUM_SUPPORTED_DIMENSIONS.rows || process.stdout.columns < MINIMUM_SUPPORTED_DIMENSIONS.columns) {
+        } else if (this.host.stdout.rows < MINIMUM_SUPPORTED_DIMENSIONS.rows || this.host.stdout.columns < MINIMUM_SUPPORTED_DIMENSIONS.columns) {
             console.log('\n' +
                 ' Tip: Current screen dimensions are smaller than minimum supported dimensions, and some screen components may have been cut off.\n' +
                 ' To fix this, either make the screen bigger or use scrolling to pan across the screen:\n' +
@@ -134,7 +132,7 @@ class App {
                 '   - Use LEFT CARROT (<) to scroll left\n' +
                 '   - Use RIGHT CARROT (>) to scroll right\n');
         }
-        process.exit();
+        this.host.exit();
     }
 
 }

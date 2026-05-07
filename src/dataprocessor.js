@@ -248,7 +248,7 @@ class DataProcessor {
         return response;
     }
 
-    static formatData(config) {
+    static formatData(config, host) {
         let element = undefined;
         if (config.atomicNumber !== undefined || config.symbol !== undefined || config.name !== undefined) {
             if (config && Utils.isValidAtomicNumber(config.atomicNumber)) {
@@ -268,8 +268,8 @@ class DataProcessor {
 
         // Element was not specified, so display the full chart
         let width = undefined;
-        if (process.stdout.isTTY) {
-            width = process.stdout.columns;
+        if (host && host.stdout.isTTY) {
+            width = host.stdout.columns;
         }
 
         const verbose = config !== undefined ? config.verbose : false;

@@ -15,7 +15,11 @@
   },
   "homepage": "https://spirometaxas.com/projects/periodic-table-cli",
   "scripts": {
-    "cli": "node ./src/cli.js"
+    "cli": "node ./src/cli.js",
+    "build:browser": "esbuild src/browser.js --bundle --minify --format=iife --global-name=PeriodicTable --outfile=dist/periodic-table.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
   },
   "author": {
     "name" : "Spiro Metaxas",

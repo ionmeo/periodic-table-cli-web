@@ -15,6 +15,32 @@ Why the console?  Because it's the *cool* way.
 
 Also available for [Python](https://pypi.org/project/periodic-table-cli/).  View [Homepage](https://spirometaxas.com/projects/periodic-table-cli).
 
+> This fork builds `periodic-table-cli` for the browser using [esbuild](https://github.com/evanw/esbuild) so that it runs without Node. You can see it live in the [doppleOS](https://doppleos.com) terminal by running the `periodic-table` command.
+>
+> ```
+> yarn install
+> yarn build:browser
+> ```
+>
+> The build creates `dist/periodic-table.js` that exposes the library on `window.PeriodicTable`.
+>
+> Some visual changes:
+>
+> - Atomic numbers and symbols are aligned.
+>
+>   ```
+>   Original        Fork
+>
+>   ║ 11  ║         ║ 11  ║
+>   ║  Na ║         ║ Na  ║
+>
+>   ║ 19  ║         ║ 19  ║
+>   ║  K  ║         ║ K   ║
+>   ```
+> - Selected element is no longer drawn in bold.
+>
+> Aside from these two changes, the fork behaves identically to the original and runs with the same commands.
+
 ## Usage
 ### Run via `npx`:
 ```

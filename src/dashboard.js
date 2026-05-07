@@ -163,7 +163,8 @@ class Dashboard {
         },
     };
 
-    constructor() {
+    constructor(host) {
+        this.host = host;
         this.board = this._parseBoard();
         this.scrolling = { x: 0, y: 0 };
         this._initDataOnBoard();
@@ -780,8 +781,8 @@ class Dashboard {
     }
 
     _getFullScreenBoard() {
-        const fullRows = process.stdout.rows;
-        const fullColumns = process.stdout.columns;
+        const fullRows = this.host.stdout.rows;
+        const fullColumns = this.host.stdout.columns;
         const fullBoard = [];
         for (var r = 0; r < fullRows; r++) {
             const row = [];
@@ -819,7 +820,7 @@ class Dashboard {
     }
 
     scrollUp() {
-        const fullRows = process.stdout.rows;
+        const fullRows = this.host.stdout.rows;
         if (fullRows < this.board.length && this.scrolling.y > 0) {
             this.scrolling.y -= 1;
             return true;
@@ -828,7 +829,7 @@ class Dashboard {
     }
 
     scrollDown() {
-        const fullRows = process.stdout.rows;
+        const fullRows = this.host.stdout.rows;
         if (fullRows < this.board.length && this.scrolling.y + fullRows < this.board.length) {
             this.scrolling.y += 1;
             return true;
@@ -837,7 +838,7 @@ class Dashboard {
     }
 
     scrollLeft() {
-        const fullColumns = process.stdout.columns;
+        const fullColumns = this.host.stdout.columns;
         if (fullColumns < this.board[0].length && this.scrolling.x > 0) {
             this.scrolling.x -= 1;
             return true;
@@ -846,7 +847,7 @@ class Dashboard {
     }
 
     scrollRight() {
-        const fullColumns = process.stdout.columns;
+        const fullColumns = this.host.stdout.columns;
         if (fullColumns < this.board[0].length && this.scrolling.x + fullColumns < this.board[0].length) {
             this.scrolling.x += 1;
             return true;
@@ -855,8 +856,8 @@ class Dashboard {
     }
 
     updateScrollingOnResize() {
-        const fullRows = process.stdout.rows;
-        const fullColumns = process.stdout.columns;
+        const fullRows = this.host.stdout.rows;
+        const fullColumns = this.host.stdout.columns;
         if (this.scrolling.y + fullRows > this.board.length) {
             this.scrolling.y = Math.max(this.board.length - fullRows, 0);
         }

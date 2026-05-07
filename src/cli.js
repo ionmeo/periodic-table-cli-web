@@ -10,8 +10,9 @@ const MODES = {
     CHART: 'CHART',
 };
 
-const printUsage = function() {
-    console.log('\n' + 
+const getUsageString = function(command) {
+    command = command || 'periodic-table-cli';
+    return '\n' +
                 '           ╔═╗                               ╔═╗ \n' +
                 '           ╠═╬═╗                   ╔═╦═╦═╦═╦═╬═╣ \n' +
                 '           ╠═╬═╣                   ╠═╬═╬═╬═╬═╬═╣ \n' +
@@ -39,9 +40,9 @@ const printUsage = function() {
                 '\n' +
                 '   - Quit: Press <ESC> or <CTRL+C>\n' +
                 '\n' +
-                ' Usage:\n' + 
-                '   $ periodic-table-cli\n' + 
-                '   $ periodic-table-cli [options]\n' + 
+                ' Usage:\n' +
+                '   $ ' + command + '\n' +
+                '   $ ' + command + ' [options]\n' +
                 '\n' +
                 ' Options:\n' + 
                 '   --mode=<mode>          Set the mode for the application.  Supports three values:\n' +
@@ -56,7 +57,11 @@ const printUsage = function() {
                 '\n' +
                 ' Full Docs: https://spirometaxas.com/projects/periodic-table-cli\n\n' +
                 ' Last updated August 2025\n' +
-                ' ' + getVersion() + '\n');
+                ' ' + getVersion() + '\n';
+}
+
+const printUsage = function() {
+    console.log(getUsageString());
 }
 
 const getFlags = function(params) {
@@ -169,40 +174,72 @@ const getVersion = function() {
     return 'v' + version + ' (NodeJS)';
 }
 
-var mode = MODES.APP;
-var atomicNumber = undefined;
-var name = undefined;
-var symbol = undefined;
-var small = false;
-var verbose = false;
+module.exports = {
+    App: App,
+    DataProcessor: DataProcessor,
+    ChartProcessor: ChartProcessor,
+    MODES: MODES,
+    getUsageString: getUsageString,
+    printUsage: printUsage,
+    getFlags: getFlags,
+    isSmall: isSmall,
+    isHelp: isHelp,
+    isVerbose: isVerbose,
+    isVersion: isVersion,
+    getMode: getMode,
+    getAtomicNumber: getAtomicNumber,
+    getName: getName,
+    getSymbol: getSymbol,
+    getVersion: getVersion,
+};
 
-if (process.argv.length > 2) {
-    const params = process.argv.slice(2);
-    mode = getMode(params);
-    atomicNumber = getAtomicNumber(params);
-    name = getName(params);
-    symbol = getSymbol(params);
-    small = isSmall(params);
-    verbose = isVerbose(params, mode);
+if (require.main === module) {
+    var mode = MODES.APP;
+    var atomicNumber = undefined;
+    var name = undefined;
+    var symbol = undefined;
+    var small = false;
+    var verbose = false;
 
-    if (isHelp(params)) {
-        printUsage();
-        process.exit();
-    } else if (isVersion(params, mode)) {
-        console.log('\n ' + getVersion() + '\n');
-        process.exit();
-    } else if (mode === MODES.DATA) {
-        console.log(DataProcessor.formatData({ atomicNumber: atomicNumber, symbol: symbol, name: name, verbose: verbose }));
-        process.exit();
-    } else if (mode === MODES.CHART) {
-        console.log(ChartProcessor.formatChart({ atomicNumber: atomicNumber, symbol: symbol, name: name, small: small }));
+    if (process.argv.length > 2) {
+        const params = process.argv.slice(2);
+        mode = getMode(params);
+        atomicNumber = getAtomicNumber(params);
+        name = getName(params);
+        symbol = getSymbol(params);
+        small = isSmall(params);
+        verbose = isVerbose(params, mode);
+
+        if (isHelp(params)) {
+            printUsage();
+            process.exit();
+        } else if (isVersion(params, mode)) {
+            console.log('\n ' + getVersion() + '\n');
+            process.exit();
+        } else if (mode === MODES.DATA) {
+            console.log(DataProcessor.formatData({ atomicNumber: atomicNumber, symbol: symbol, name: name, verbose: verbose }, process));
+            process.exit();
+        } else if (mode === MODES.CHART) {
+            console.log(ChartProcessor.formatChart({ atomicNumber: atomicNumber, symbol: symbol, name: name, small: small }));
+            process.exit();
+        }
+    }
+
+    if (!process.stdout.isTTY) {
+        console.log(' Error: Interactive mode is only supported within a terminal screen.');
         process.exit();
     }
-}
 
-if (!process.stdout.isTTY) {
-    console.log(' Error: Interactive mode is only supported within a terminal screen.');
-    process.exit();
-}
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
 
-new App().start({ atomicNumber: atomicNumber, name: name, symbol: symbol });
+    const host = {
+        stdin: process.stdin,
+        stdout: process.stdout,
+        on: function(event, cb) { return process.on(event, cb); },
+        exit: function() { return process.exit(); },
+    };
+
+    new App().start({ atomicNumber: atomicNumber, name: name, symbol: symbol }, host);
+}
