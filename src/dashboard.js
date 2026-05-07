@@ -181,14 +181,12 @@ class Dashboard {
                     if (Utils.isBottomSection(Layout.PeriodicTable[r][c])) {
                         yOffset += 2;
                     }
-                    // Atomic number
-                    if (Layout.PeriodicTable[r][c] < 10) {
-                        this._setText(xOffset + (c * this.ELEMENT_WIDTH) + 3, yOffset + (r * this.ELEMENT_HEIGHT) + 1, elements[Layout.PeriodicTable[r][c]]['atomicNumber'].toString());
-                    } else {
-                        this._setText(xOffset + (c * this.ELEMENT_WIDTH) + 2, yOffset + (r * this.ELEMENT_HEIGHT) + 1, elements[Layout.PeriodicTable[r][c]]['atomicNumber'].toString());
-                    }
-                    // Symbol
-                    this._setText(xOffset + (c * this.ELEMENT_WIDTH) + 3, yOffset + (r * this.ELEMENT_HEIGHT) + 2, elements[Layout.PeriodicTable[r][c]]['symbol']);
+                    // Align atomic number and symbol => col +3 if both are 1 char, else col +2
+                    const numStr = elements[Layout.PeriodicTable[r][c]]['atomicNumber'].toString();
+                    const symStr = elements[Layout.PeriodicTable[r][c]]['symbol'];
+                    const xOff = (numStr.length === 1 && symStr.length === 1) ? 3 : 2;
+                    this._setText(xOffset + (c * this.ELEMENT_WIDTH) + xOff, yOffset + (r * this.ELEMENT_HEIGHT) + 1, numStr);
+                    this._setText(xOffset + (c * this.ELEMENT_WIDTH) + xOff, yOffset + (r * this.ELEMENT_HEIGHT) + 2, symStr);
                 }
             }
         }
